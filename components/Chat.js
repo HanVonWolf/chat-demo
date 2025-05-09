@@ -1,21 +1,67 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Platform, KeyboardAvoidingView } from 'react-native';
+import { Bubble, GiftedChat } from "react-native-gifted-chat";
 
 const Chat = ({ route, navigation }) => { // <-- Component function starts here
     const { name, backgroundColor } = route.params;
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
-      navigation.setOptions({ title: name });
-    }, [name]);
+      navigation.setOptions({ title: name })
+      setMessages([
+        {
+          _id: 1,
+          text: 'Hello there!',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://placeimg.com/140/140/any',
+          },
+        },
+        {
+          _id: 2,
+          text: 'Sytem message: send a message to chat!',
+          createdAt: new Date(),
+          system: true,
+        },
+      ]);
+  
+    }, []);
+  
+    const onSend = (newMessages) => {
+      setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
+    }
+  
+    const renderBubble = (props) => {
+      return <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: "#000"
+          },
+          left: {
+            backgroundColor: "#FFF"
+          }
+        }}
+      />
+    }
 
-    // THIS RETURN STATEMENT MUST BE INSIDE THE FUNCTION
     return (
-        <View style={[styles.container, { backgroundColor: backgroundColor || "#fff" }]}>
-            {/* Your chat UI elements will go here */}
-        </View>
-    );
-}; // <-- Component function ends here
+      <View style={styles.container}>
+        <GiftedChat
+          messages={messages}
+          renderBubble={renderBubble}
+          onSend={messages => onSend(messages)}
+          user={{
+            _id: 1,
+            name
+          }}
+        />
+        {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
+      </View>
+    )
+  };
 
 const styles = StyleSheet.create({
     container: {
