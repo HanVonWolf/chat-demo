@@ -7,19 +7,24 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 
 const Start = ({ navigation }) => {
-const signInUser = () => {
-    navigation.navigate("Chat", {
-      name: name, // Pass the user's name
-      backgroundColor: backgroundColor, // Pass the selected background color
-    });
-  };
-  // State to store user's input name
-  const [name, setName] = useState("");
-  // State to store selected background color, with a default value
-  const [backgroundColor, setBackgroundColor] = useState("#090C08");
+    // State to store user's input name
+    const [name, setName] = useState("");
+    // State to store selected background color, with a default value
+    const [backgroundColor, setBackgroundColor] = useState("#090C08");
+
+    const auth = getAuth();
+
+    const signInUser = () => {
+      signInAnonymously(auth).then(res => {
+        console.log("Start.js - res.user.uid:", res.user.uid);
+        navigation.navigate("Chat", { userID: res.user.uid, name: name, color: selectedBackgroundColor })
+      });
+    }
+
 
   // Array of color options for users to choose their preferred background
   const colors = ["#090C08", "#474056", "#8A95A5", "#B9C6AE"];

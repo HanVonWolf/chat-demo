@@ -1,36 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Platform, KeyboardAvoidingView } from 'react-native';
 import { Bubble, GiftedChat } from "react-native-gifted-chat";
+import { addDoc, collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
-const Chat = ({ route, navigation }) => { // <-- Component function starts here
+const Chat = ({ route, navigation, db }) => { // <-- Component function starts here
     const { name, backgroundColor } = route.params;
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
-      navigation.setOptions({ title: name })
-      setMessages([
-        {
-          _id: 1,
-          text: 'Hello there!',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://placeimg.com/140/140/any',
-          },
-        },
-        {
-          _id: 2,
-          text: 'Sytem message: send a message to chat!',
-          createdAt: new Date(),
-          system: true,
-        },
-      ]);
+      navigation.setOptions({ title: name });
+      const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+      const unsubMessages = onSnapshot(q, (docs) => {
+        let newMessages = [];
+        docs.forEach(doc => {
+          newMessages.push({
+            id: doc.id,
+            ...doc.data(),
+            createdAt: new Date(doc.data().createdAt.toMillis())
+          })
+        })
+        setMessages(newMessages);
+      })
+      return () => {
+        if (unsubMessages) unsubMessages();
+      }
+     }, []);
   
-    }, []);
-  
-    const onSend = (newMessages) => {
-      setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
+     const onSend = async (newMessages) => {
+      console.log('onSend in Chat.js called with:', newMessages);
+      try {
+        await addDoc(collection(db, "messages"), newMessages[0]);
+        console.log('Message sent to Firestore successfully!');
+      } catch (error) {
+        console.error('Error sending message to Firestore:', error);
+        // Optionally, display an error message to the user
+      }
     }
   
     const renderBubble = (props) => {
