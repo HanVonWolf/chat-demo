@@ -58,7 +58,7 @@ const Chat = ({ route, navigation }) => { // <-- Component function starts here
             name
           }}
         />
-        {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
+       {Platform.OS === "ios"?<KeyboardAvoidingView behavior="padding" />: null}
       </View>
     )
   };
