@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
-import { getAuth, signInAnonymously } from "firebase/auth";
+import { signInAnonymously } from "firebase/auth";
+
+import { db, app, auth } from "../firebaseConfig";
 
 
 const Start = ({ navigation }) => {
@@ -16,7 +18,7 @@ const Start = ({ navigation }) => {
     // State to store selected background color, with a default value
     const [backgroundColor, setBackgroundColor] = useState("#090C08");
 
-    const auth = getAuth();
+    /*const auth = getAuth();*/
 
     const signInUser = () => {
       signInAnonymously(auth).then(res => {

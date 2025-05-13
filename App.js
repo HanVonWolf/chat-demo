@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from 'react-native'; // Keep if used, otherwis
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+
 const Stack = createNativeStackNavigator();
 
 // --- REMOVE THESE IMPORTS ---
@@ -12,14 +13,12 @@ const Stack = createNativeStackNavigator();
 // import { getFirestore } from 'firebase/firestore';
 // ----------------------------
 
+import { db, app } from "./firebaseConfig";
+
 // Import screens
 import Start from "./components/Start";
 import Chat from "./components/Chat";
 
-// --- IMPORT FIREBASE INSTANCES FROM YOUR CONFIG FILE ---
-// This import executes the initialization logic in firebaseConfig.js
-import { db, app, firebaseConfig } from "./firebaseConfig";
-// ------------------------------------------------------
 
 const App = () => {
   // --- REMOVE ALL THIS REDUNDANT FIREBASE INITIALIZATION ---
