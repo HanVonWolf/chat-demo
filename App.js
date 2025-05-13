@@ -1,52 +1,74 @@
-import { useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// App.js
+import { useEffect } from 'react'; // Keep if you use useEffect elsewhere, otherwise remove
+import { StatusBar } from 'expo-status-bar'; // Keep if used, otherwise remove
+import { StyleSheet, Text, View } from 'react-native'; // Keep if used, otherwise remove
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
 
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+// --- REMOVE THESE IMPORTS ---
+// import { initializeApp } from 'firebase/app';
+// import { getFirestore } from 'firebase/firestore';
+// ----------------------------
 
 // Import screens
 import Start from "./components/Start";
-import Chat from "./components/Chat"; // Make sure this import is correct
+import Chat from "./components/Chat";
+
+// --- IMPORT FIREBASE INSTANCES FROM YOUR CONFIG FILE ---
+// This import executes the initialization logic in firebaseConfig.js
+import { db, app, firebaseConfig } from "./firebaseConfig";
+// ------------------------------------------------------
 
 const App = () => {
+  // --- REMOVE ALL THIS REDUNDANT FIREBASE INITIALIZATION ---
+  // const firebaseConfig = {
+  //       apiKey: "AIzaSyAff3-pnAkK2c8HuSUx-vu4zVa1rBe2bj0",
+  //       authDomain: "chat-demo-final.firebaseapp.com",
+  //       projectId: "chat-demo-final",
+  //       storageBucket: "chat-demo-final.firebasestorage.app",
+  //       messagingSenderId: "1047456983894",
+  //       appId: "1:1047456983894:web:862144edd7f724dbf404f7"
+  //   };
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDeCzgjB44pqwMSK2QZkGJCR11MBp0DCU8",
-    authDomain: "chat-demo-f2075.firebaseapp.com",
-    projectId: "chat-demo-f2075",
-    storageBucket: "chat-demo-f2075.firebasestorage.app",
-    messagingSenderId: "649726344435",
-    appId: "1:649726344435:web:363617c87d9c1cd3574b86"
-  };
+  //   // Initialize Firebase
+  //   const app = initializeApp(firebaseConfig);
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
+  //   // Initialize Cloud Firestore and get a reference to the service
+  //   const db = getFirestore(app);
+  // ----------------------------------------------------------
 
-  // Initialize Cloud Firestore and get a reference to the service
-  const db = getFirestore(app);
+  // Now, the 'db' and 'app' variables you imported from './firebaseConfig'
+  // are the correctly initialized instances.
 
-return (
-  <NavigationContainer>
-    <Stack.Navigator initialRouteName="Start">
-      {/* Start screen for entering user details */}
-      <Stack.Screen name="Start" component={Start} />
-      {/* Chat screen, passing props to configure the chat */}
-      {/* FIX: Add the component prop pointing to the imported Chat component */}
-      <Stack.Screen
-          name="Chat">
-          {props => <Chat 
-          db={db}
-          {...props}
-           />}
-        </Stack.Screen>
-    </Stack.Navigator>
-  </NavigationContainer>
-);
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Start">
+        {/* Start screen for entering user details */}
+        {/* If Start component needs db or app, it should import them from firebaseConfig */}
+        <Stack.Screen name="Start" component={Start} />
+
+        {/* Chat screen, passing props to configure the chat */}
+        <Stack.Screen
+            name="Chat">
+            {props => <Chat
+            db={db} // Pass the imported db instance
+            {...props}
+             />}
+          </Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 };
 
 export default App;
+
+const styles = StyleSheet.create({
+container: {
+flex: 1,
+backgroundColor: '#fff',
+alignItems: 'center',
+justifyContent: 'center',
+},
+});
