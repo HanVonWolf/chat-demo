@@ -10,6 +10,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { initializeApp } from "firebase/app";
 import { getFirestore, disableNetwork, enableNetwork } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getAuth } from "firebase/auth";
 
 // Import network detection
 import { useNetInfo } from "@react-native-community/netinfo";
@@ -32,6 +33,7 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firestore
 const db = getFirestore(app);
 const storage = getStorage(app);
+const auth = getAuth(app);
 
 // Create the navigator
 const Stack = createNativeStackNavigator();
@@ -51,7 +53,9 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Start">
-        <Stack.Screen name="Start" component={Start} />
+      <Stack.Screen name="Start">
+  {props => <Start {...props} auth={auth} />}
+</Stack.Screen>
         <Stack.Screen name="Chat">
           {(props) => <Chat {...props} db={db} storage={storage} isConnected={connectionStatus.isConnected} />}
         </Stack.Screen>
