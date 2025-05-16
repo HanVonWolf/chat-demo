@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
 import { getAuth, signInAnonymously } from "firebase/auth";
 
-const Start = ({ navigation }) => {
+const Start = ({ navigation, auth }) => {
   const [name, setName] = useState('');
   const [color, setColor] = useState('#090C08');
 
   // Function to sign in anonymously
   const signInUser = () => {
-    const auth = getAuth(); // Initialize Firebase authentication instance
+    /*const auth = getAuth(); // Initialize Firebase authentication instance*/
     signInAnonymously(auth) // Attempt anonymous sign-in
       .then((userCredential) => {
         const userId = userCredential.user.uid; // Retrieve the unique user ID
@@ -24,7 +24,7 @@ const Start = ({ navigation }) => {
       source={require('../assets/Background.png')} // Ensure this image exists in the specified path
       style={styles.container}
     >
-      <Text style={styles.title}>Let's chat!</Text>
+      <Text style={styles.title}>let's chat!</Text>
 
       <TextInput
         style={styles.input}
