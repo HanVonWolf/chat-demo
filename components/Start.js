@@ -1,109 +1,137 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, ImageBackground, Alert } from "react-native"
 import { getAuth, signInAnonymously } from "firebase/auth";
+import { useState } from "react"
 
-const Start = ({ navigation, auth }) => {
-  const [name, setName] = useState('');
-  const [color, setColor] = useState('#090C08');
+const backgroundColors = ['#090C08', '#474056', '#8A95A5', '#B9C6AE']
 
-  // Function to sign in anonymously
+const Start = ({ navigation }) => {
+  const [name, setName] = useState("")
+  const [backgroundColor, setBackgroundColor] = useState("salmon")
+
+  const auth = getAuth();
+
+  // Creating function for anonymous sing in according to firestore doc
   const signInUser = () => {
-    /*const auth = getAuth(); // Initialize Firebase authentication instance*/
-    signInAnonymously(auth) // Attempt anonymous sign-in
-      .then((userCredential) => {
-        const userId = userCredential.user.uid; // Retrieve the unique user ID
-        navigation.navigate('Chat', { userId, name, color }); // Navigate to Chat screen, passing user details
+    signInAnonymously(auth)
+      .then(result => {
+        // sending the props/parameters to the Chat component
+        navigation.navigate("Chat", 
+          { userID: result.user.uid, backgroundColor: backgroundColor, name: name });
+        Alert.alert("Signed in Successfully!");
       })
-      .catch(error => {
-        console.error("Error signing in anonymously:", error); // Log errors if sign-in fails
+      .catch((error) => {//if there is an error, an alert will be displayed to the user.
+        console.log(error.message);
+        Alert.alert("Unable to sign in, try later again.");
       });
-  };
+  }
+  return (//this is the start screen of the app
+    <ImageBackground
+      source={require('../assets/Background.png')}
+      style={styles.container} 
 
-  return (
-    <ImageBackground 
-      source={require('../assets/Background.png')} // Ensure this image exists in the specified path
-      style={styles.container}
     >
-      <Text style={styles.title}>let's chat!</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Your Name"
-        placeholderTextColor="#000000"
-        onChangeText={setName} // Updates the `name` state on user input
-        value={name}
-      />
-      
-      <Text style={styles.label}>Choose Background Color</Text>
-
-      <View style={styles.colorOptions}>
-        {/* Render color selection buttons dynamically */}
-        {['#090C08', '#474056', '#8A95A5', '#B9C6AE'].map((bgColor) => (
-          <TouchableOpacity
-            key={bgColor}
-            style={[styles.colorButton, { backgroundColor: bgColor }]} // Apply color dynamically
-            onPress={() => setColor(bgColor)} // Update the `color` state when clicked
-          />
-        ))}
+      <Text style={styles.title}>Let's chat!</Text>
+      <View style={styles.box}>
+        <TextInput
+          style={styles.textInput}
+          value={name}
+          onChangeText={setName}
+          placeholder="Your Name"
+        />
+        <Text style={{ fontSize: 16, fontWeight: 300, color: '#757083', opacity: 1, marginTop: 20 }}> Choose Background Color:</Text>
+        <View style={styles.colorPaletteContainer}>
+          {/* Map through backgroundColors array to implement TouchableOpacity component according to the given colors  */}
+          {backgroundColors.map(color =>
+            <TouchableOpacity
+              accessible={true}
+              accessibilityLabel='Change background color of chat'
+              accessbilityHint='There are four color options to customize the look of the chat'
+              key={color}
+              style={[styles.colorPalette, { backgroundColor: color }, styles.colorBorder, backgroundColor == color && styles.clickedCircle]}
+              onPress={() => setBackgroundColor(prevState =>
+                prevState === color ? prevState = '#ffffff' : color
+              )}
+            />
+          )}
+          
+        </View>
+        <TouchableOpacity
+          style={styles.touchable}
+          title="Start Chatting"
+          onPress={signInUser}
+          accessible={true}
+          accessibilityLabel='Enter the chat'
+          accessibilityHint='Leaves the home screen for the Chat screen'
+          accessibilityRole='Button'
+        >
+          <Text style={[styles.touchInnerText, styles.touchable]}>Start Chatting </Text>
+        </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.button} onPress={signInUser}>
-        <Text style={styles.buttonText}>Start Chatting</Text>
-      </TouchableOpacity>
     </ImageBackground>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  textInput: {
+    width: 300,
+    padding: 15,
+    borderWidth: 1,
+    marginBottom: 15,
+    fontSize: 16,
+    fontWeight: "300",
+    color: "#757083",
+    textAlign: "left",
+    opacity: 0.5
+  },
+  clickedCircle: {
+    borderWidth: 3,
+    borderColor: '#abdbe3'
   },
   title: {
+    fontFamily: "monospace",
     fontSize: 45,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginBottom: 40,
+    fontWeight: "600",
+    color: "salmon",
+    textAlign: "center",
+    paddingHorizontal: 20
+
   },
-  input: {
-    height: 50,
-    width: '80%',
-    borderColor: '#000000',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-    color: '#000000',
+  touchable: {
+    
+    borderRadius: 30,
+    width: 300,
+    alignItems: "center",
+    backgroundColor: "#757083",
+    padding: 10,
+    fontSize: 15,
+    fontWeight: "600",
+    textAlign: "center"
   },
-  label: {
-    fontSize: 16,
-    fontWeight: '300',
-    color: '#000000',
-    marginBottom: 10,
+  box: {
+    opacity: .85,
+    borderRadius: 30,
+    backgroundColor: 'bisque',
+    padding: 16
   },
-  colorOptions: {
-    flexDirection: 'row', // Arrange color buttons in a horizontal row
-    marginBottom: 20,
+  touchInnerText: {
+    color: '#ffffff',
   },
-  colorButton: {
+  colorPalette: {
     width: 50,
     height: 50,
-    margin: 5,
-    borderRadius: 25, // Make buttons circular
+    borderRadius: 25,
+    marginTop: 10,
+    marginBottom: 40
   },
-  button: {
-    backgroundColor: '#757083',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-});
+  colorPaletteContainer: {
+    flexDirection: 'row',
+    gap: 16,
+  }
+})
 
-export default Start;
+export default Start
